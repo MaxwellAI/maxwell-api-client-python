@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name='maxwell-api-client',
@@ -7,7 +7,7 @@ setup(
     author_email='mailtobwind+mac@gmail.com',
     description='Maxwell API Client',
     url='https://bitbucket.org/maxwell/maxwell-api-client',
-    packages=['maxwell'],
+    packages=find_packages(),
     install_requires=open('requirements.txt', 'r').readlines(),
     include_package_data=True,
     long_description=open('README.md').read(),
