@@ -6,7 +6,7 @@ setup(
     author='Bas Wind',
     author_email='mailtobwind+mac@gmail.com',
     description='Maxwell API Client',
-    url='https://bitbucket.org/maxwell/maxwell-api-client',
+    url='https://bitbucket.org/maxwellai/maxwell-api-client',
     packages=find_packages(),
     install_requires=['requests'],
     include_package_data=True,
