@@ -5,6 +5,9 @@ import terminaltables
 import textwrap
 
 
+__all__ = ['MaxwellAPIClient', 'MaxwellStagingAPIClient']
+
+
 logging.getLogger().setLevel(logging.INFO)
 
 
