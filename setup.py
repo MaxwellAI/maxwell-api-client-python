@@ -8,7 +8,7 @@ setup(
     description='Maxwell API Client',
     url='https://bitbucket.org/maxwell/maxwell-api-client',
     packages=find_packages(),
-    install_requires=open('requirements.txt', 'r').readlines(),
+    install_requires=['requests'],
     include_package_data=True,
     long_description=open('README.md').read(),
 )

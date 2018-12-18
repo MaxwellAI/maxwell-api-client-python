@@ -1,8 +1,6 @@
 import json
 import logging
 import requests
-import terminaltables
-import textwrap
 
 
 __all__ = ['MaxwellAPIClient', 'MaxwellStagingAPIClient']
@@ -16,7 +14,7 @@ def file_or_stdin(input):
         input.startswith('@') else input
 
 
-class MaxwellAPIClient:
+class MaxwellAPIClient(object):
     DEFAULT_TIMEOUT = 10
 
     def __init__(self, access_token, base_url='https://api.maxwell.ai/'):
@@ -46,46 +44,6 @@ class MaxwellAPIClient:
             return response.json()
         except json.decoder.JSONDecodeError:
             return response.text
-
-        try:
-            print(self._response_to_table(response.json()))
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-
-    def _response_to_table(self, response_json):
-        def format(obj):
-            if isinstance(obj, list):
-                return '\n'.join(sorted([format(item) for item in obj]))
-            elif isinstance(obj, dict):
-                return ', '.join([format(value) for value in obj.values() if
-                                  format(value)])
-            elif isinstance(obj, str):
-                return '\n'.join(textwrap.wrap(obj))
-            elif isinstance(obj, (int, float)):
-                return str(obj)
-            elif obj is None:
-                return ''
-            return 'UNKNOWN TYPE'
-        table_data = []
-        if len(response_json.keys()) == 1:
-            objs = next(iter(response_json.values()))
-        else:
-            objs = response_json
-        if isinstance(objs, list):
-            if len(objs) == 0:
-                return response_json
-            headers = sorted(objs[0].keys())
-            for obj in objs:
-                table_data.append([format(obj[header]) for header in headers])
-        elif isinstance(objs, dict):
-            headers = sorted(objs.keys())
-            table_data.append([format(objs[header]) for header in headers])
-        else:
-            return objs
-        table_data = [headers] + table_data
-        table = terminaltables.AsciiTable(table_data=table_data)
-        table.inner_row_border = True
-        return table.table
 
     def _execute_command(self, command, *args):
         assert command.strip('_') == command
@@ -164,5 +122,5 @@ class MaxwellAPIClient:
 
 class MaxwellStagingAPIClient(MaxwellAPIClient):
     def __init__(self, *args, **kwargs):
-        super().__init__(
+        super(MaxwellStagingAPIClient, self).__init__(
             *args, base_url='https://staging.api.maxwell.ai/', **kwargs)

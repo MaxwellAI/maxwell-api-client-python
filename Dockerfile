@@ -4,8 +4,8 @@ RUN pip install -U pip
 
 WORKDIR /app
 
-ADD requirements.txt /app
-
 RUN echo "alias l='ls -lahF --color=auto'" >> /root/.bashrc
 
-RUN pip install -r requirements.txt
+ADD requirements*.txt /app/
+
+RUN pip install -r requirements-dev.txt

@@ -1,5 +1,7 @@
 # Maxwell API Client
 
+Simple Maxwell API client written in Python. Tested with Python versions 2.7 and 3.3 - 3.7.
+
 ## Usage
 
     >>> from maxwell import MaxwellAPIClient

@@ -1,2 +1,1 @@
 requests
-terminaltables>=3.0.0
