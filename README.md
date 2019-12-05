@@ -1,30 +1,40 @@
 # Maxwell API Client
 
-Simple Maxwell API client written in Python. Tested with Python versions 2.7 and 3.3 - 3.7.
+Maxwell API client written in Python. Tested with Python versions 3.6 - 3.8.
 
 ## Usage
 
-    >>> from maxwell import MaxwellAPIClient
-    >>> client = MaxwellAPIClient(access_token='eyJ0eXAiOiJKV1QiLCJhbGciOi...')
-    >>> client.list_teams()
-    {'teams': [{'id': '5c17cedebc69d77789347dc5',
-       'members': [{'id': '5c17cee6bc69d77789347dc6'}],
-       'name': 'My Team'}]}
+    >>> import maxwell
+    >>> client = maxwell.Client(access_token='eyJ0eXAiOiJKV1QiLCJhbGciOi...')
+    >>> client.Teams.list()
+    [Team(id='5a4f74c3830f781b3b3093be', name='Maxwell'),
+     Team(id='5a61ca49830f780e2dfa54c7', name='Test'),
+     Team(id='5a940e3d419f570010d096e4', name='Foo')]
+    >>> client.Teams.get(id='5a4f74c3830f781b3b3093be').Blueprints.list()
+    [Blueprint(id='5ddfe170884854759fc1d946', name='Test 2019-Nov-28 15:03'),
+     Blueprint(id='5ddfe1d4884854759fc1d95a', name='Test 2019-Nov-28 15:17')]
 
-## Available commands
+## Resources
 
-* add_team_channel(team_id, channel)
-* add_team_member(team_id, customer_id)
-* create_blueprint(team_id, blueprint)
-* create_blueprint_revision(team_id, blueprint_id, blueprint_revision)
-* get_blueprint_revision(blueprint_id, blueprint_revision_id)
-* get_customer_profile()
-* get_team_invoice_address(team_id)
-* list_teams()
-* list_team_blueprints(team_id)
-* list_team_channels(team_id)
-* list_team_members(team_id)
-* list_blueprint_revisions(blueprint_id)
-* publish_blueprint_revision(blueprint_id, blueprint_revision_id)
-* remove_team_channel(team_id, channel)
-* remove_team_member(team_id, customer_id)
+* Users.get(): User
+* User.Channels.list(): List[Channel]
+* Channels.get(platform, external_id): Channel
+* Channel.Contacts.list(): List[Contact]
+* Channel.Contacts.get(id): Contact
+* Channel.Conversations.create(Conversation): List[Conversation]
+* Teams.list(): List[Team]
+* Teams.get(id): Team
+* Team.Channels.list(): List[Channel]
+* Team.Channels.get(platform, external_id): Channel
+* Team.Blueprints.list(): List[Blueprint]
+* Team.Blueprints.get(id): Blueprint
+* Team.Blueprints.create(Blueprint): Blueprint
+* Blueprint.Revisions.list(): List[Revision]
+* Blueprint.Revisions.create(Revision): Revision
+* Revision.publish(): None
+
+## Models
+
+* maxwell.model.workflow.Workflow
+* maxwell.model.message.text.TextMessage
+* maxwell.model.task.send_message.SendMessageTask

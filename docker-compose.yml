@@ -1,15 +1,15 @@
 version: '2'
 
 networks:
-    internal:
-        driver: bridge
+  internal:
+    driver: bridge
 
 services:
-  maxwell-api-client:
+  default:
     build: .
     volumes:
     - .:/app
     networks:
-        internal:
-           aliases:
-             - maxwell-api-client
+      internal:
+        aliases:
+          - maxwell-api-client
