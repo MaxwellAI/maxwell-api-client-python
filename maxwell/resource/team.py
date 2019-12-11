@@ -1,6 +1,7 @@
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.blueprint import Blueprints
 from maxwell.resource.channel import Channels
+from maxwell.resource.dashboard import Dashboards
 
 
 class Team(Resource):
@@ -11,8 +12,15 @@ class Team(Resource):
         self.id = id
         self.name = name
         self._path = self._path.format(id=id)
-        self._channels = None
         self._blueprints = None
+        self._channels = None
+        self._dashboards = None
+
+    @property
+    def Blueprints(self):
+        if self._blueprints is None:
+            self._blueprints = Blueprints(self._client, self)
+        return self._blueprints
 
     @property
     def Channels(self):
@@ -21,12 +29,12 @@ class Team(Resource):
         return self._channels
 
     @property
-    def Blueprints(self):
-        if self._blueprints is None:
-            self._blueprints = Blueprints(self._client, self)
-        return self._blueprints
+    def Dashboards(self):
+        if self._dashboards is None:
+            self._dashboards = Dashboards(self._client, self)
+        return self._dashboards
 
 
-class Teams(Resource):
+class Teams(ListResource):
     _path = "teams"
     _resource = Team

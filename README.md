@@ -18,10 +18,14 @@ Maxwell API client written in Python. Tested with Python versions 3.6 - 3.8.
 
 * Users.get(): User
 * User.Channels.list(): List[Channel]
-* Channels.get(platform, external_id): Channel
+* User.Channels.get(platform, external_id): Channel
+
 * Channel.Contacts.list(): List[Contact]
 * Channel.Contacts.get(id): Contact
 * Channel.Conversations.create(Conversation): List[Conversation]
+* Channel.PersistentMenu.get(): PersistentMenu
+* Channel.PersistentMenu.update(PersistentMenu): PersistentMenu
+
 * Teams.list(): List[Team]
 * Teams.get(id): Team
 * Team.Channels.list(): List[Channel]
@@ -29,8 +33,15 @@ Maxwell API client written in Python. Tested with Python versions 3.6 - 3.8.
 * Team.Blueprints.list(): List[Blueprint]
 * Team.Blueprints.get(id): Blueprint
 * Team.Blueprints.create(Blueprint): Blueprint
+* Team.Dashboards.list(): List[Dashboard]
+* Team.Dashboards.create(Dashboard): Dashboard
+
+* Dashboard.Reports.list(): List[Report]
+* Dashboard.Reports.create(Report): Report
+
 * Blueprint.Revisions.list(): List[Revision]
 * Blueprint.Revisions.create(Revision): Revision
+
 * Revision.publish(): None
 
 ## Models

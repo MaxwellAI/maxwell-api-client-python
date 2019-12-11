@@ -29,11 +29,13 @@ class ApiError(Exception):
 
 class Client(object):
     DEFAULT_TIMEOUT = 60
+    DEFAULT_BASE_URL = "https://api.maxwell.ai/"
     DEFAULT_VERSION = "2.0"
+    requests = requests
 
-    def __init__(self, access_token, base_url="https://api.maxwell.ai/"):
+    def __init__(self, access_token=None, base_url=None):
         self._access_token = access_token
-        self._base_url = base_url
+        self._base_url = base_url or self.DEFAULT_BASE_URL
         self.Users = Users(self)
         self.Teams = Teams(self)
 
@@ -58,7 +60,7 @@ class Client(object):
         }
         timeout = timeout or self.DEFAULT_TIMEOUT
         data = json.dumps(data) if data else None
-        response = getattr(requests, method)(
+        response = getattr(self.requests, method)(
             url, headers=headers, data=data, params=params, timeout=timeout
         )
         logger.debug(

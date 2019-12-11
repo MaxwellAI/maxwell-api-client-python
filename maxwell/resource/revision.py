@@ -1,4 +1,4 @@
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 
 
 class Revision(Resource):
@@ -28,7 +28,7 @@ class Revision(Resource):
         return self._request("publish", method="post")
 
 
-class Revisions(Resource):
+class Revisions(ListResource):
     _path = "revisions"
     _slug = "blueprint_revisions"
     _resource = Revision

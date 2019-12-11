@@ -1,6 +1,6 @@
 from marshmallow import fields, Schema
 
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.blueprint import BlueprintSchema
 from maxwell.resource.contact import ContactSchema
 
@@ -39,7 +39,7 @@ class ConversationSchema(Schema):
     context = fields.Dict(allow_none=True)
 
 
-class Conversations(Resource):
+class Conversations(ListResource):
     _path = "conversations"
     _resource = Conversation
 

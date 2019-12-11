@@ -3,6 +3,9 @@ class Model:
         "id",
     ]
 
+    def __eq__(self, other):
+        return self._data == other._data
+
     def __repr__(self):
         values = [
             "%s=%s" % (k, repr(v))

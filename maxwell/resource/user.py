@@ -1,4 +1,4 @@
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.channel import Channels
 
 
@@ -6,7 +6,14 @@ class User(Resource):
     _path = "customers"
 
     def __init__(
-        self, client, parent, id, first_name, last_name, email, picture
+        self,
+        id,
+        first_name,
+        last_name,
+        email,
+        picture,
+        client=None,
+        parent=None,
     ):
         super().__init__(client, parent)
         self.id = id
@@ -23,8 +30,23 @@ class User(Resource):
         return self._channels
 
 
-class Users(Resource):
+class Users(ListResource):
     _path = "customers"
 
     def get(self):
-        return User(self._client, self._parent, **self._request("profile"))
+        return User(
+            client=self._client,
+            parent=self._parent,
+            **self._request(path="profile"),
+        )
+
+    def login(self, username, password):
+        return self._request(
+            method="post",
+            path="users/login",
+            data={
+                "identity_provider": "password",
+                "username": username,
+                "password": password,
+            },
+        )["access_token"]

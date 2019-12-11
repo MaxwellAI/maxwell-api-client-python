@@ -1,6 +1,6 @@
 from marshmallow import fields, Schema
 
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.revision import Revisions
 
 
@@ -26,19 +26,6 @@ class BlueprintSchema(Schema):
     name = fields.Str()
 
 
-class Blueprints(Resource):
+class Blueprints(ListResource):
     _path = "blueprints"
     _resource = Blueprint
-
-    def get(self, id):
-        return self._resource(
-            client=self._client,
-            parent=self._parent,
-            **self._request(f"id/{id}"),
-        )
-
-    def list(self):
-        return [
-            Blueprint(client=self._client, parent=self._parent, **blueprint)
-            for blueprint in self._request()["blueprints"]
-        ]

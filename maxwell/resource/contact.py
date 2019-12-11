@@ -1,6 +1,6 @@
 from marshmallow import fields, Schema
 
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 
 
 class Contact(Resource):
@@ -28,6 +28,6 @@ class ContactSchema(Schema):
     last_name = fields.Str(allow_none=True)
 
 
-class Contacts(Resource):
+class Contacts(ListResource):
     _path = "contacts"
     _resource = Contact

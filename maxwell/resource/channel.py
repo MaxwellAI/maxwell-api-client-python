@@ -1,6 +1,8 @@
-from maxwell.resource.base import Resource
+from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.contact import Contacts
 from maxwell.resource.conversation import Conversations
+from maxwell.resource.persistent_menu import PersistentMenu
+from maxwell.resource.whitelisted_domains import WhitelistedDomains
 
 
 class Channel(Resource):
@@ -21,9 +23,12 @@ class Channel(Resource):
         self.name = name
         self._contacts = None
         self._conversations = None
-        self._update_path_with_parameters(
-            platform=platform, external_id=external_id
-        )
+        self._persistent_menu = None
+        self._whitelisted_domains = None
+        if platform and external_id:
+            self._path = self._get_path(
+                platform=platform, external_id=external_id
+            )
 
     @property
     def Contacts(self):
@@ -37,8 +42,22 @@ class Channel(Resource):
             self._conversations = Conversations(self._client, self)
         return self._conversations
 
+    @property
+    def PersistentMenus(self):
+        if self._persistent_menu is None:
+            self._persistent_menu = PersistentMenu(
+                client=self._client, parent=self
+            )
+        return self._persistent_menu
 
-class Channels(Resource):
+    @property
+    def WhitelistedDomains(self):
+        if self._whitelisted_domains is None:
+            self._whitelisted_domains = WhitelistedDomains(self._client, self)
+        return self._whitelisted_domains
+
+
+class Channels(ListResource):
     _path = "channels"
     _resource = Channel
 
