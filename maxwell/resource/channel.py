@@ -25,10 +25,9 @@ class Channel(Resource):
         self._conversations = None
         self._persistent_menu = None
         self._whitelisted_domains = None
-        if platform and external_id:
-            self._path = self._get_path(
-                platform=platform, external_id=external_id
-            )
+        self._update_path_with_parameters(
+            platform=platform, external_id=external_id
+        )
 
     @property
     def Contacts(self):

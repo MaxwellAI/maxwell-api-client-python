@@ -5,6 +5,7 @@ from unittest import mock
 import maxwell
 from maxwell.resource.channel import Channel
 from maxwell.resource.contact import Contact
+from maxwell.resource.dashboard import Dashboard
 from maxwell.resource.team import Team
 from maxwell.resource.user import User
 
@@ -14,6 +15,7 @@ RULES = {
     r"2.0/teams/id/[a-z0-f]{24}": '{"id": "aaaaaaaaaaaaaaaaaaaaaaaa", "name": "Maxwell"}',  # noqa: E501
     r"2.0/teams/id/[a-z0-f]{24}/channels": '{"channels": [{"platform": "facebook", "external_id": "123"}]}',  # noqa: E501
     r"2.0/teams/id/[a-z0-f]{24}/channels/facebook/[0-9]+": '{"platform": "facebook", "external_id": "123"}',  # noqa: E501
+    r"2.0/teams/id/[a-z0-f]{24}/analytics/dashboards": '{"dashboards": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}]}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts": '{"contacts": [{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}]}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts/id/[a-f0-9]{24}": '{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}',  # noqa: E501
     "2.0/customers/channels": '{"channels": [{"platform": "facebook", "external_id": "123"}]}',  # noqa: E501
@@ -114,3 +116,9 @@ class TestClient:
         assert result == Contact(
             id="123123123123123123123123", first_name="J", last_name="D"
         )
+
+    def test_team_dashboards_list(self):
+        result = self.client.Teams.list()[0].Dashboards.list()
+        assert result == [
+            Dashboard(id="bbbbbbbbbbbbbbbbbbbbbbbb", title="default")
+        ]

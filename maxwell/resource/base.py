@@ -58,4 +58,8 @@ class ListResource(BaseResource):
 
 
 class Resource(BaseResource):
-    pass
+    def _update_path_with_parameters(self, **parameters):
+        if parameters and all([p is not None for p in parameters.values()]):
+            self._path = self._path.format(**parameters)
+        elif self.id is not None:
+            self._path = self._path.format(id=id)
