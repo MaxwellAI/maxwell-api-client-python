@@ -5,13 +5,10 @@ from maxwell.resource.revision import Revisions
 
 
 class Blueprint(Resource):
-    _path = "blueprints/id/{id}"
-
     def __init__(self, name, id=None, client=None, parent=None, **kwargs):
-        super().__init__(client, parent)
+        super().__init__(client, parent, id=id)
         self.id = id
         self.name = name
-        self._path = self._path.format(id=id)
         self._revisions = None
 
     @property
@@ -28,4 +25,4 @@ class BlueprintSchema(Schema):
 
 class Blueprints(ListResource):
     _path = "blueprints"
-    _resource = Blueprint
+    _resource_class = Blueprint

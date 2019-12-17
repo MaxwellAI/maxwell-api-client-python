@@ -1,30 +1,48 @@
 from maxwell.model.base import Model
 
 
-class BaseResource(Model):
-    def __init__(self, client, parent=None):
+class BaseResource:
+    _levels = None
+
+    def __init__(self, client, parent=None, **path_parameters):
         self._client = client
         self._parent = parent
+        if path_parameters:
+            self._path = self._get_path(**path_parameters)
 
-    def _request(
-        self, path=None, method="get", *args, **kwargs,
-    ):
-        fullpath = self._get_fullpath()
-        if path:
-            fullpath = f"{fullpath}/{path}"
+    def _request(self, path, method="get", *args, **kwargs):
         version = self._get_version()
         return self._client._request(
-            method=method, path=fullpath, api_version=version, *args, **kwargs
+            method=method, path=path, api_version=version, *args, **kwargs
         )
 
-    def _get_fullpath(self, **parameters):
+    @classmethod
+    def _get_path(cls, **parameters):
+        """
+        Returns the relative, formatted path for a resource.
+        """
+        if parameters and any([p is None for p in parameters.values()]):
+            raise Exception(f"Not all parameters are not None: {parameters}")
+        return cls._path.format(**parameters)
+
+    def _get_full_path(self, **parameters):
         paths = [self._get_path(**parameters)]
-        if self._parent is not None:
-            paths.insert(0, self._parent._get_path())
+        root = self._get_root_path()
+        if root:
+            paths.insert(0, root)
         return "/".join(paths)
 
-    def _get_path(self, **parameters):
-        return self._path.format(**parameters)
+    def _get_root_path(self):
+        parent = self._parent if hasattr(self, "_parent") else None
+        levels = self._levels
+        paths = []
+        while parent is not None and (levels is None or levels > 0):
+            paths.insert(0, parent._path)
+            if levels is not None:
+                levels -= 1
+            if hasattr(parent, "_parent"):
+                parent = parent._parent
+        return "/".join(paths)
 
     def _get_version(self):
         return (
@@ -36,30 +54,32 @@ class BaseResource(Model):
 
 class ListResource(BaseResource):
     def create(self, obj):
-        obj._client = self._client
-        obj._parent = self._parent
-        obj.id = self._request(method="post", data=obj._data)["id"]
+        path = self._get_full_path()
+        response = self._request(path=path, method="post", data=obj._data)
+        obj.id = response["id"]
         return obj
 
-    def get(self, id):
-        return self._resource(
-            client=self._client,
-            parent=self._parent,
-            **self._request(f"id/{id}"),
+    def get(self, id=None, **parameters):
+        if id is not None:
+            parameters["id"] = id
+        resource = self._resource_class(
+            client=self._client, parent=self, **parameters
         )
+        path = (
+            f"{resource._get_root_path()}/{resource._get_path(**parameters)}"
+        )
+        for key, value in self._request(path=path).items():
+            setattr(resource, key, value)
+        return resource
 
     def list(self):
+        path = self._get_full_path()
+        response = self._request(path=path)[getattr(self, "_slug", self._path)]
         return [
-            self._resource(client=self._client, parent=self._parent, **item)
-            for item in self._request()[
-                getattr(self, "_slug", self._get_path())
-            ]
+            self._resource_class(client=self._client, parent=self, **item)
+            for item in response
         ]
 
 
-class Resource(BaseResource):
-    def _update_path_with_parameters(self, **parameters):
-        if parameters and all([p is not None for p in parameters.values()]):
-            self._path = self._path.format(**parameters)
-        elif self.id is not None:
-            self._path = self._path.format(id=id)
+class Resource(BaseResource, Model):
+    _path = "id/{id}"

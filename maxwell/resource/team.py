@@ -5,13 +5,10 @@ from maxwell.resource.dashboard import Dashboards
 
 
 class Team(Resource):
-    _path = "teams/id/{id}"
-
-    def __init__(self, name, id=None, client=None, parent=None, **kwargs):
-        super().__init__(client, parent)
+    def __init__(self, name=None, id=None, client=None, parent=None, **kwargs):
+        super().__init__(client, parent, id=id)
         self.id = id
         self.name = name
-        self._path = self._path.format(id=id)
         self._blueprints = None
         self._channels = None
         self._dashboards = None
@@ -37,4 +34,4 @@ class Team(Resource):
 
 class Teams(ListResource):
     _path = "teams"
-    _resource = Team
+    _resource_class = Team

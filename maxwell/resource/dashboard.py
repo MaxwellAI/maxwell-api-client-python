@@ -3,16 +3,15 @@ from maxwell.resource.report import Reports
 
 
 class Dashboard(Resource):
-    _path = "analytics/dashboards/id/{id}"
+    _levels = 1
 
     def __init__(
         self, id=None, title=None, client=None, parent=None, **kwargs,
     ):
-        super().__init__(client, parent)
+        super().__init__(client, parent, id=id)
         self.id = id
         self.title = title
         self._reports = None
-        self._update_path_with_parameters()
 
     @property
     def Reports(self):
@@ -23,5 +22,6 @@ class Dashboard(Resource):
 
 class Dashboards(ListResource):
     _path = "analytics/dashboards"
-    _resource = Dashboard
     _slug = "dashboards"
+    _resource_class = Dashboard
+    _levels = 2

@@ -6,19 +6,17 @@ from maxwell.resource.contact import ContactSchema
 
 
 class Conversation(Resource):
-    _path = "conversations"
-
     def __init__(
         self,
+        id=None,
         blueprint=None,
         contacts=None,
         context=None,
-        id=None,
         client=None,
         parent=None,
         **kwargs,
     ):
-        super().__init__(client, parent)
+        super().__init__(client, parent, id=id)
         self.id = id
         self.blueprint = blueprint
         self.contacts = contacts
@@ -41,7 +39,7 @@ class ConversationSchema(Schema):
 
 class Conversations(ListResource):
     _path = "conversations"
-    _resource = Conversation
+    _resource_class = Conversation
 
     def create(self, obj):
         obj._client = self._client

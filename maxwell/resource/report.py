@@ -15,12 +15,11 @@ class Report(Resource):
         parent=None,
         **kwargs,
     ):
-        super().__init__(client, parent)
+        super().__init__(client, parent, id=id)
         assert type in self.REPORT_TYPES
         self.id = id
         self.title = title
         self.type = type
-        self._update_path_with_parameters()
 
 
 class Reports(ListResource):

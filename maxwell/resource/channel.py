@@ -6,7 +6,7 @@ from maxwell.resource.whitelisted_domains import WhitelistedDomains
 
 
 class Channel(Resource):
-    _path = "channels/{platform}/{external_id}"
+    _path = "{platform}/{external_id}"
 
     def __init__(
         self,
@@ -17,7 +17,9 @@ class Channel(Resource):
         parent=None,
         **kwargs,
     ):
-        super().__init__(client, parent)
+        super().__init__(
+            client, parent, platform=platform, external_id=external_id
+        )
         self.platform = platform
         self.external_id = external_id
         self.name = name
@@ -25,9 +27,6 @@ class Channel(Resource):
         self._conversations = None
         self._persistent_menu = None
         self._whitelisted_domains = None
-        self._update_path_with_parameters(
-            platform=platform, external_id=external_id
-        )
 
     @property
     def Contacts(self):
@@ -58,11 +57,17 @@ class Channel(Resource):
 
 class Channels(ListResource):
     _path = "channels"
-    _resource = Channel
+    _resource_class = Channel
 
     def get(self, platform, external_id):
-        return self._resource(
-            client=self._client,
-            parent=self._parent,
-            **self._request(f"{platform}/{external_id}"),
-        )
+        return super().get(platform=platform, external_id=external_id)
+
+    def _get_root_path(self):
+        """
+        The `customers/channels` endpoint follows a non-standard URL pattern.
+        """
+        from maxwell.resource.user import User
+
+        if isinstance(self._parent, User):
+            return self._parent._parent._path
+        return super()._get_root_path()

@@ -3,15 +3,15 @@ from maxwell.resource.channel import Channels
 
 
 class User(Resource):
-    _path = "customers"
+    _path = "profile"
 
     def __init__(
         self,
-        id,
-        first_name,
-        last_name,
-        email,
-        picture,
+        id=None,
+        first_name=None,
+        last_name=None,
+        email=None,
+        picture=None,
         client=None,
         parent=None,
     ):
@@ -32,21 +32,4 @@ class User(Resource):
 
 class Users(ListResource):
     _path = "customers"
-
-    def get(self):
-        return User(
-            client=self._client,
-            parent=self._parent,
-            **self._request(path="profile"),
-        )
-
-    def login(self, username, password):
-        return self._request(
-            method="post",
-            path="users/login",
-            data={
-                "identity_provider": "password",
-                "username": username,
-                "password": password,
-            },
-        )["access_token"]
+    _resource_class = User
