@@ -2,6 +2,20 @@ from marshmallow import fields, post_load, Schema
 from marshmallow.validate import OneOf
 
 from maxwell.resource.base import Resource, ListResource
+from maxwell.model.base import Model
+
+
+class ReportQuerySchema(Schema):
+    filters = fields.List(fields.Dict(), many=True)
+    group = fields.List(fields.Str())
+    sort = fields.List(fields.Str())
+
+
+class ReportQuery(Model):
+    def __init__(self, filters=None, group=None, sort=None):
+        self.filters = filters
+        self.group = group
+        self.sort = sort
 
 
 class Report(Resource):
@@ -13,6 +27,7 @@ class Report(Resource):
         id=None,
         title=None,
         type=None,
+        query=None,
         client=None,
         parent=None,
         **kwargs,
@@ -23,6 +38,7 @@ class Report(Resource):
         self.id = id
         self.title = title
         self.type = type
+        self.query = query
 
     @property
     def _data(self):
@@ -34,6 +50,7 @@ class ReportSchema(Schema):
     id = fields.Str(allow_none=True)
     title = fields.Str(allow_none=True)
     type = fields.Str(allow_none=True, validate=OneOf(Report.REPORT_TYPES))
+    query = fields.Nested(ReportQuerySchema, allow_none=True)
 
     @post_load
     def make_object(self, data, **kwargs):

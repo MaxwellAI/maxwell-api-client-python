@@ -21,9 +21,9 @@ class BaseResource:
         """
         Returns the relative, formatted path for a resource.
         """
-        if parameters and any([p is None for p in parameters.values()]):
-            raise Exception(f"Not all parameters are not None: {parameters}")
         if parameters:
+            if any([p is None for p in parameters.values()]):
+                return
             return cls._path.format(**parameters)
         return cls._path
 
@@ -56,6 +56,8 @@ class BaseResource:
 
 class ListResource(BaseResource):
     def create(self, obj):
+        obj._parent = self
+        obj._client = self._client
         path = self._get_full_path()
         response = self._request(path=path, method="post", data=obj._data)
         obj.id = response["id"]

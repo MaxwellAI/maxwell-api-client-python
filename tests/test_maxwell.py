@@ -6,7 +6,7 @@ import maxwell
 from maxwell.resource.channel import Channel
 from maxwell.resource.contact import Contact
 from maxwell.resource.dashboard import Dashboard
-from maxwell.resource.report import Report
+from maxwell.resource.report import Report, ReportQuery
 from maxwell.resource.team import Team
 from maxwell.resource.user import User
 
@@ -18,8 +18,8 @@ RULES = {
     r"2.0/teams/id/[a-z0-f]{24}/channels/facebook/[0-9]+": '{"platform": "facebook", "external_id": "123"}',  # noqa: E501
     r"2.0/teams/id/[a-z0-f]{24}/analytics/dashboards": '{"dashboards": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}]}',  # noqa: E501
     r"2.0/analytics/dashboards/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}',  # noqa: E501
-    r"2.0/analytics/dashboards/id/[a-z0-f]{24}/reports": '{"reports": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}]}',  # noqa: E501
-    r"2.0/analytics/reports/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}',  # noqa: E501
+    r"2.0/analytics/dashboards/id/[a-z0-f]{24}/reports": '{"reports": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default", "type": "bar", "query": {"filters": [{"timestamp": {"from": "2018-03-01T09:47:34.478Z"}}, {"event_names": ["message.sent"]}, {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}}], "group": ["event_name"], "sort": ["count", "-timestamp"]}}]}',  # noqa: E501
+    r"2.0/analytics/reports/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default", "type": "bar", "query": {"filters": [{"timestamp": {"from": "2018-03-01T09:47:34.478Z"}}, {"event_names": ["message.sent"]}, {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}}], "group": ["event_name"], "sort": ["count", "-timestamp"]}}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts": '{"contacts": [{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}]}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts/id/[a-f0-9]{24}": '{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}',  # noqa: E501
     "2.0/customers/channels": '{"channels": [{"platform": "facebook", "external_id": "123"}]}',  # noqa: E501
@@ -138,8 +138,42 @@ class TestClient:
             self.client.Teams.list()[0].Dashboards.get("b" * 24).Reports.list()
         )
         assert result == [
-            Report(id="bbbbbbbbbbbbbbbbbbbbbbbb", title="default")
+            Report(
+                id="bbbbbbbbbbbbbbbbbbbbbbbb",
+                title="default",
+                type="bar",
+                query=ReportQuery(
+                    filters=[
+                        {"timestamp": {"from": "2018-03-01T09:47:34.478Z"}},
+                        {"event_names": ["message.sent"]},
+                        {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}},
+                    ],
+                    group=["event_name"],
+                    sort=["count", "-timestamp"],
+                ),
+            )
         ]
+
+    def test_reports_get(self):
+        result = (
+            self.client.Teams.list()[0]
+            .Dashboards.get("b" * 24)
+            .Reports.get("b" * 24)
+        )
+        assert result == Report(
+            id="bbbbbbbbbbbbbbbbbbbbbbbb",
+            title="default",
+            type="bar",
+            query=ReportQuery(
+                filters=[
+                    {"timestamp": {"from": "2018-03-01T09:47:34.478Z"}},
+                    {"event_names": ["message.sent"]},
+                    {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}},
+                ],
+                group=["event_name"],
+                sort=["count", "-timestamp"],
+            ),
+        )
 
 
 class TestPaths:
@@ -263,3 +297,33 @@ class TestPaths:
             obj._get_full_path(**parameters)
             == "analytics/reports/id/aaaaaaaaaaaaaaaaaaaaaaaa"
         )
+
+
+class TestModels:
+    def setup(self):
+        self.query = {
+            "filters": [
+                {"timestamp": {"from": "2018-03-01T09:47:34.478Z"}},
+                {"event_names": ["message.sent"]},
+                {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}},
+            ],
+            "group": ["event_name"],
+            "sort": ["count", "-timestamp"],
+        }
+
+    def test_report(self):
+        report = Report(
+            id=None,
+            title="default",
+            type="bar",
+            query=ReportQuery(
+                filters=self.query["filters"],
+                group=self.query["group"],
+                sort=self.query["sort"],
+            ),
+        )
+        assert report._data == {
+            "title": "default",
+            "type": "bar",
+            "query": self.query,
+        }
