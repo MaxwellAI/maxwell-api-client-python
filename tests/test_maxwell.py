@@ -6,6 +6,7 @@ import maxwell
 from maxwell.resource.channel import Channel
 from maxwell.resource.contact import Contact
 from maxwell.resource.dashboard import Dashboard
+from maxwell.resource.report import Report
 from maxwell.resource.team import Team
 from maxwell.resource.user import User
 
@@ -17,6 +18,8 @@ RULES = {
     r"2.0/teams/id/[a-z0-f]{24}/channels/facebook/[0-9]+": '{"platform": "facebook", "external_id": "123"}',  # noqa: E501
     r"2.0/teams/id/[a-z0-f]{24}/analytics/dashboards": '{"dashboards": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}]}',  # noqa: E501
     r"2.0/analytics/dashboards/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}',  # noqa: E501
+    r"2.0/analytics/dashboards/id/[a-z0-f]{24}/reports": '{"reports": [{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}]}',  # noqa: E501
+    r"2.0/analytics/reports/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default"}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts": '{"contacts": [{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}]}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts/id/[a-f0-9]{24}": '{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}',  # noqa: E501
     "2.0/customers/channels": '{"channels": [{"platform": "facebook", "external_id": "123"}]}',  # noqa: E501
@@ -92,11 +95,11 @@ class TestClient:
         result = self.client.Teams.list()[0].Channels.list()
         assert result == [Channel(platform="facebook", external_id="123")]
 
-    def test_team_channels_get(self):
+    def test_channels_get(self):
         result = self.client.Teams.list()[0].Channels.get("facebook", "123")
         assert result == Channel(platform="facebook", external_id="123")
 
-    def test_team_channel_contacts_list(self):
+    def test_contacts_list(self):
         result = (
             self.client.Teams.list()[0]
             .Channels.get("facebook", "123")
@@ -108,7 +111,7 @@ class TestClient:
             )
         ]
 
-    def test_team_channel_contacts_get(self):
+    def test_contacts_get(self):
         result = (
             self.client.Teams.list()[0]
             .Channels.get("facebook", "123")
@@ -118,17 +121,25 @@ class TestClient:
             id="123123123123123123123123", first_name="J", last_name="D"
         )
 
-    def test_team_dashboards_list(self):
+    def test_dashboards_list(self):
         result = self.client.Teams.list()[0].Dashboards.list()
         assert result == [
             Dashboard(id="bbbbbbbbbbbbbbbbbbbbbbbb", title="default")
         ]
 
-    def test_team_dashboards_get(self):
+    def test_dashboards_get(self):
         result = self.client.Teams.list()[0].Dashboards.get("b" * 24)
         assert result == Dashboard(
             id="bbbbbbbbbbbbbbbbbbbbbbbb", title="default"
         )
+
+    def test_reports_list(self):
+        result = (
+            self.client.Teams.list()[0].Dashboards.get("b" * 24).Reports.list()
+        )
+        assert result == [
+            Report(id="bbbbbbbbbbbbbbbbbbbbbbbb", title="default")
+        ]
 
 
 class TestPaths:
@@ -183,7 +194,7 @@ class TestPaths:
             == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa/channels/facebook/123"
         )
 
-    def test_team_channel_contacts_list_path(self):
+    def test_contacts_list_path(self):
         obj = (
             self.client.Teams.get("aaaaaaaaaaaaaaaaaaaaaaaa")
             .Channels.get(platform="facebook", external_id="123")
@@ -193,7 +204,7 @@ class TestPaths:
         assert obj._get_root_path() == "channels/facebook/123"
         assert obj._get_full_path() == "channels/facebook/123/contacts"
 
-    def test_team_channel_contacts_get_path(self):
+    def test_contacts_get_path(self):
         parameters = dict(id="123123123123123123123123")
         obj = (
             self.client.Teams.list()[0]
@@ -207,7 +218,7 @@ class TestPaths:
             == "channels/facebook/123/contacts/id/123123123123123123123123"
         )
 
-    def test_team_dashboards_list_path(self):
+    def test_dashboards_list_path(self):
         obj = self.client.Teams.list()[0].Dashboards
         assert obj._get_path() == "analytics/dashboards"
         assert obj._get_root_path() == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa"
@@ -216,7 +227,7 @@ class TestPaths:
             == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa/analytics/dashboards"
         )
 
-    def test_team_dashboards_get_path(self):
+    def test_dashboards_get_path(self):
         parameters = dict(id="aaaaaaaaaaaaaaaaaaaaaaaa")
         obj = self.client.Teams.list()[0].Dashboards.get(**parameters)
         assert obj._get_path(**parameters) == "id/aaaaaaaaaaaaaaaaaaaaaaaa"
@@ -224,4 +235,31 @@ class TestPaths:
         assert (
             obj._get_full_path(**parameters)
             == "analytics/dashboards/id/aaaaaaaaaaaaaaaaaaaaaaaa"
+        )
+
+    def test_reports_list_path(self):
+        parameters = dict(id="aaaaaaaaaaaaaaaaaaaaaaaa")
+        obj = self.client.Teams.list()[0].Dashboards.get(**parameters).Reports
+        assert obj._get_path(**parameters) == "reports"
+        assert (
+            obj._get_root_path()
+            == "analytics/dashboards/id/aaaaaaaaaaaaaaaaaaaaaaaa"
+        )
+        assert (
+            obj._get_full_path(**parameters)
+            == "analytics/dashboards/id/aaaaaaaaaaaaaaaaaaaaaaaa/reports"
+        )
+
+    def test_reports_get_path(self):
+        parameters = dict(id="aaaaaaaaaaaaaaaaaaaaaaaa")
+        obj = (
+            self.client.Teams.list()[0]
+            .Dashboards.get(**parameters)
+            .Reports.get(**parameters)
+        )
+        assert obj._get_path(**parameters) == "id/aaaaaaaaaaaaaaaaaaaaaaaa"
+        assert obj._get_root_path() == "analytics/reports"
+        assert (
+            obj._get_full_path(**parameters)
+            == "analytics/reports/id/aaaaaaaaaaaaaaaaaaaaaaaa"
         )
