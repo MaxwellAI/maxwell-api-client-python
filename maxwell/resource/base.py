@@ -22,9 +22,8 @@ class BaseResource:
         Returns the relative, formatted path for a resource.
         """
         if parameters:
-            if any([p is None for p in parameters.values()]):
-                return
-            return cls._path.format(**parameters)
+            if all([p is not None for p in parameters.values()]):
+                return cls._path.format(**parameters)
         return cls._path
 
     def _get_full_path(self, **parameters):
