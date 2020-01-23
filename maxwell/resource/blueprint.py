@@ -5,7 +5,9 @@ from maxwell.resource.revision import Revisions
 
 
 class Blueprint(Resource):
-    def __init__(self, name, id=None, client=None, parent=None, **kwargs):
+    _depth = 1
+
+    def __init__(self, name=None, id=None, client=None, parent=None, **kwargs):
         super().__init__(client, parent, id=id)
         self.id = id
         self.name = name

@@ -3,7 +3,7 @@ from maxwell.resource.report import Reports
 
 
 class Dashboard(Resource):
-    _levels = 1
+    _depth = 1
 
     def __init__(
         self, id=None, title=None, client=None, parent=None, **kwargs,
@@ -24,4 +24,4 @@ class Dashboards(ListResource):
     _path = "analytics/dashboards"
     _slug = "dashboards"
     _resource_class = Dashboard
-    _levels = 2
+    _depth = 2

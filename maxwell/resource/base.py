@@ -2,7 +2,7 @@ from maxwell.model.base import Model
 
 
 class BaseResource:
-    _levels = None
+    _depth = None
 
     def __init__(self, client, parent=None, **path_parameters):
         self._client = client
@@ -35,7 +35,7 @@ class BaseResource:
 
     def _get_root_path(self):
         parent = self._parent if hasattr(self, "_parent") else None
-        levels = self._levels
+        levels = self._depth
         paths = []
         while parent is not None and (levels is None or levels > 0):
             paths.insert(0, parent._path)

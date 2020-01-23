@@ -20,7 +20,7 @@ class ReportQuery(Model):
 
 class Report(Resource):
     REPORT_TYPES = ("table", "bar", "line")
-    _levels = 1
+    _depth = 1
 
     def __init__(
         self,
@@ -77,4 +77,4 @@ class Reports(ListResource, metaclass=ReportsMeta):
     _path = "analytics/reports"
     _slug = "reports"
     _resource_class = Report
-    _levels = 2
+    _depth = 2

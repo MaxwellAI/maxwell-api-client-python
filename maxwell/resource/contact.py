@@ -5,7 +5,7 @@ from maxwell.resource.base import Resource, ListResource
 
 class Contact(Resource):
     _include_fields = ["id"]
-    _levels = 3
+    _depth = 3
 
     def __init__(
         self,
@@ -31,4 +31,4 @@ class ContactSchema(Schema):
 class Contacts(ListResource):
     _path = "contacts"
     _resource_class = Contact
-    _levels = 2
+    _depth = 2

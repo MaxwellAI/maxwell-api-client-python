@@ -29,3 +29,4 @@ class Revisions(ListResource):
     _path = "revisions"
     _slug = "blueprint_revisions"
     _resource_class = Revision
+    _depth = 2
