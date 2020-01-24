@@ -2,6 +2,8 @@ from maxwell.resource.base import Resource, ListResource
 
 
 class Revision(Resource):
+    _depth = 3
+
     def __init__(
         self,
         welcome_messages=None,
@@ -21,8 +23,11 @@ class Revision(Resource):
         self.is_current = is_current
         self._exclude_fields += ["is_current"]
 
+    def _get_publish_path(self, **parameters):
+        return f"{self._get_full_path(**parameters)}/publish"
+
     def publish(self):
-        return self._request("publish", method="post")
+        return self._request(self._get_publish_path(id=self.id), method="post")
 
 
 class Revisions(ListResource):

@@ -22,6 +22,8 @@ RULES = {
     r"2.0/analytics/reports/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "title": "default", "type": "bar", "query": {"filters": [{"timestamp": {"from": "2018-03-01T09:47:34.478Z"}}, {"event_names": ["message.sent"]}, {"blueprint": {"id": "2df7ff8yu984aa9064e2456"}}], "group": ["event_name"], "sort": ["count", "-timestamp"]}}',  # noqa: E501
     r"2.0/blueprints/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb", "name": "Name"}',  # noqa: E501
     r"2.0/blueprints/id/[a-z0-f]{24}/revisions": '{"blueprint_revisions": []}',  # noqa: E501
+    r"2.0/blueprints/id/[a-z0-f]{24}/revisions/id/[a-z0-f]{24}": '{"id": "bbbbbbbbbbbbbbbbbbbbbbbb"}',  # noqa: E501
+    r"2.0/blueprints/id/[a-z0-f]{24}/revisions/id/[a-z0-f]{24}/publish": "",
     r"2.0/channels/facebook/[0-9]+/contacts": '{"contacts": [{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}]}',  # noqa: E501
     r"2.0/channels/facebook/[0-9]+/contacts/id/[a-f0-9]{24}": '{"id": "123123123123123123123123", "first_name": "J", "last_name": "D"}',  # noqa: E501
     "2.0/customers/channels": '{"channels": [{"platform": "facebook", "external_id": "123"}]}',  # noqa: E501
@@ -238,6 +240,35 @@ class TestPaths:
         assert (
             obj._get_full_path()
             == "blueprints/id/123123123123123123123123/revisions"
+        )
+
+    def test_revisions_get_path(self):
+        parameters = dict(id="123123123123123123123123")
+        obj = (
+            self.client.Teams.get("aaaaaaaaaaaaaaaaaaaaaaaa")
+            .Blueprints.get("bbbbbbbbbbbbbbbbbbbbbbbb")
+            .Revisions.get(**parameters)
+        )
+        assert obj._get_path(**parameters) == "id/123123123123123123123123"
+        assert (
+            obj._get_root_path()
+            == "blueprints/id/bbbbbbbbbbbbbbbbbbbbbbbb/revisions"
+        )
+        assert (
+            obj._get_full_path(**parameters)
+            == "blueprints/id/bbbbbbbbbbbbbbbbbbbbbbbb/revisions/id/123123123123123123123123"  # noqa: E501
+        )
+
+    def test_revisions_publish_path(self):
+        parameters = dict(id="123123123123123123123123")
+        obj = (
+            self.client.Teams.get("aaaaaaaaaaaaaaaaaaaaaaaa")
+            .Blueprints.get("bbbbbbbbbbbbbbbbbbbbbbbb")
+            .Revisions.get(**parameters)
+        )
+        assert (
+            obj._get_publish_path(**parameters)
+            == "blueprints/id/bbbbbbbbbbbbbbbbbbbbbbbb/revisions/id/123123123123123123123123/publish"  # noqa: E501
         )
 
     def test_team_channels_list_path(self):
