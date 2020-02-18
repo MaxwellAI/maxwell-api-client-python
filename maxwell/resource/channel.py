@@ -31,13 +31,15 @@ class Channel(Resource):
     @property
     def Contacts(self):
         if self._contacts is None:
-            self._contacts = Contacts(self._client, self)
+            self._contacts = Contacts(client=self._client, parent=self)
         return self._contacts
 
     @property
     def Conversations(self):
         if self._conversations is None:
-            self._conversations = Conversations(self._client, self)
+            self._conversations = Conversations(
+                client=self._client, parent=self
+            )
         return self._conversations
 
     @property
@@ -51,7 +53,9 @@ class Channel(Resource):
     @property
     def WhitelistedDomains(self):
         if self._whitelisted_domains is None:
-            self._whitelisted_domains = WhitelistedDomains(self._client, self)
+            self._whitelisted_domains = WhitelistedDomains(
+                client=self._client, parent=self
+            )
         return self._whitelisted_domains
 
 
