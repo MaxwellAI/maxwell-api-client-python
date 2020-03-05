@@ -86,3 +86,10 @@ class ListResource(BaseResource):
 
 class Resource(BaseResource, Model):
     _path = "id/{id}"
+
+    def update(self):
+        path = self._get_full_path(id=self.id)
+        data = self._data
+        data.pop("id", None)
+        self._request(path=path, method="put", data=data)
+        return self
