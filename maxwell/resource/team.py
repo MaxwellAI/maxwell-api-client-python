@@ -2,6 +2,7 @@ from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.blueprint import Blueprints
 from maxwell.resource.channel import Channels
 from maxwell.resource.dashboard import Dashboards
+from maxwell.resource.invite import Invites
 from maxwell.resource.member import Members
 
 
@@ -13,6 +14,7 @@ class Team(Resource):
         self._blueprints = None
         self._channels = None
         self._dashboards = None
+        self._invites = None
         self._members = None
 
     @property
@@ -32,6 +34,12 @@ class Team(Resource):
         if self._dashboards is None:
             self._dashboards = Dashboards(client=self._client, parent=self)
         return self._dashboards
+
+    @property
+    def Invites(self):
+        if self._invites is None:
+            self._invites = Invites(client=self._client, parent=self)
+        return self._invites
 
     @property
     def Members(self):

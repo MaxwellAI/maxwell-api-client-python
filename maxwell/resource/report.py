@@ -19,7 +19,7 @@ class ReportQuery(Model):
 
 
 class Report(Resource):
-    REPORT_TYPES = ("table", "bar", "line")
+    REPORT_TYPES = ("table", "bar", "line", "number")
     _depth = 1
 
     def __init__(
