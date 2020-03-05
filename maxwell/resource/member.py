@@ -32,7 +32,7 @@ class Members(ListResource):
             path=self._get_full_path(), method="post", data=data
         )
 
-    def delete(self, obj):
+    def remove(self, obj):
         obj._client = self._client
         obj._parent = self._parent
         data = {"id": obj.id}
