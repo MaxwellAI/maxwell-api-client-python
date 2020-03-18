@@ -25,9 +25,7 @@ class User(Resource):
 
     @property
     def Channels(self):
-        if self._channels is None:
-            self._channels = Channels(self._client, self)
-        return self._channels
+        return self._child_object(Channels)
 
 
 class Users(ListResource):

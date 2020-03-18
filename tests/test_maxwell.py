@@ -295,6 +295,14 @@ class TestPaths:
             == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa/channels/facebook/123"
         )
 
+    def test_team_events_list_path(self):
+        obj = self.client.Teams.get("aaaaaaaaaaaaaaaaaaaaaaaa").Events
+        assert obj._get_path() == "events"
+        assert obj._get_root_path() == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa"
+        assert (
+            obj._get_full_path() == "teams/id/aaaaaaaaaaaaaaaaaaaaaaaa/events"
+        )
+
     def test_contacts_list_path(self):
         obj = (
             self.client.Teams.get("aaaaaaaaaaaaaaaaaaaaaaaa")

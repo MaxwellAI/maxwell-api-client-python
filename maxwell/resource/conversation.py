@@ -45,8 +45,8 @@ class Conversations(ListResource):
         obj._client = self._client
         obj._parent = self._parent
         data = {**obj._data, "blueprint": {"id": obj.blueprint.id}}
-        path = f"{obj._parent._fullpath()}/{obj._path}"
-        response = self._request(fullpath=path, method="post", data=data)
+        path = f"{obj._parent._get_full_path()}/{obj._path}"
+        response = self._request(path, method="post", data=data)
         return [
             self._resource(**{**obj.__dict__, "id": conversation["id"]})
             for conversation in response["conversations"]

@@ -15,9 +15,7 @@ class Blueprint(Resource):
 
     @property
     def Revisions(self):
-        if self._revisions is None:
-            self._revisions = Revisions(self._client, self)
-        return self._revisions
+        return self._child_object(Revisions)
 
 
 class BlueprintSchema(Schema):

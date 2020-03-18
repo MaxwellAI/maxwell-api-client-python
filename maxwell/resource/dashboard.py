@@ -15,9 +15,7 @@ class Dashboard(Resource):
 
     @property
     def Reports(self):
-        if self._reports is None:
-            self._reports = Reports(self._client, self)
-        return self._reports
+        return self._child_object(Reports)
 
 
 class Dashboards(ListResource):

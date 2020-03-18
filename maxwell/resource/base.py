@@ -87,6 +87,13 @@ class ListResource(BaseResource):
 class Resource(BaseResource, Model):
     _path = "id/{id}"
 
+    def _child_object(self, obj):
+        name = f"_{obj.__name__.lower()}"
+        if not getattr(self, name, None):
+            instance = obj(client=self._client, parent=self)
+            setattr(self, name, instance)
+        return getattr(self, name)
+
     def update(self):
         path = self._get_full_path(id=self.id)
         data = self._data

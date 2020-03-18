@@ -1,3 +1,5 @@
+from marshmallow import fields, Schema
+
 from maxwell.resource.base import Resource, ListResource
 from maxwell.resource.contact import Contacts
 from maxwell.resource.conversation import Conversations
@@ -30,41 +32,30 @@ class Channel(Resource):
 
     @property
     def Contacts(self):
-        if self._contacts is None:
-            self._contacts = Contacts(client=self._client, parent=self)
-        return self._contacts
+        return self._child_object(Contacts)
 
     @property
     def Conversations(self):
-        if self._conversations is None:
-            self._conversations = Conversations(
-                client=self._client, parent=self
-            )
-        return self._conversations
+        return self._child_object(Conversations)
 
     @property
     def PersistentMenus(self):
-        if self._persistent_menu is None:
-            self._persistent_menu = PersistentMenu(
-                client=self._client, parent=self
-            )
-        return self._persistent_menu
+        return self._child_object(PersistentMenu)
 
     @property
     def WhitelistedDomains(self):
-        if self._whitelisted_domains is None:
-            self._whitelisted_domains = WhitelistedDomains(
-                client=self._client, parent=self
-            )
-        return self._whitelisted_domains
+        return self._child_object(WhitelistedDomains)
+
+
+class ChannelSchema(Schema):
+    platform = fields.Str(allow_none=True)
+    external_id = fields.Str(allow_none=True)
+    name = fields.Str(allow_none=True)
 
 
 class Channels(ListResource):
     _path = "channels"
     _resource_class = Channel
-
-    def get(self, platform, external_id):
-        return super().get(platform=platform, external_id=external_id)
 
     def _get_root_path(self):
         """
@@ -75,3 +66,22 @@ class Channels(ListResource):
         if isinstance(self._parent, User):
             return self._parent._parent._path
         return super()._get_root_path()
+
+    def get(self, platform, external_id):
+        return super().get(platform=platform, external_id=external_id)
+
+    def add(self, obj):
+        obj._client = self._client
+        obj._parent = self._parent
+        data = {"platform": obj.platform, "external_id": obj.external_id}
+        return self._request(
+            path=self._get_full_path(), method="post", data=data
+        )
+
+    def remove(self, obj):
+        obj._client = self._client
+        obj._parent = self._parent
+        data = {"platform": obj.platform, "external_id": obj.external_id}
+        return self._request(
+            path=self._get_full_path(), method="delete", data=data
+        )
