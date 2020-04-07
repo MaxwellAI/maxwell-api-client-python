@@ -8,7 +8,7 @@ release [here](https://www.python.org/downloads/).
 Also, make sure to install iPython, which provides a powerful interactive
 Python shell:
 
-    pip3 install ipython
+    pip install ipython
 
 ## Usage
 
